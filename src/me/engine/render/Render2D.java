@@ -450,7 +450,7 @@ public class Render2D {
 			renderChar(m, 0, 0, s.toUpperCase().toCharArray()[xo]);
 			GL11.glTranslatef(-xo, 0, 0);
 		}
-	}
+	}//comment
 
 	public static void renderChar(MainClass m, float x, float y, char c) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

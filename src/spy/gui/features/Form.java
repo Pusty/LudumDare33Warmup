@@ -24,7 +24,7 @@ public class Form extends IPanel
 	
 	public void LeftMouseUp(Mouse mouse)
 	{
-		
+		//comment
 	}
 	
 	public void RightMouseDown(Mouse mouse)
