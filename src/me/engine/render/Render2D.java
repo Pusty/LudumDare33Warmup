@@ -664,6 +664,9 @@ public class Render2D {
 		else
 			glBindTexture(GL_TEXTURE_2D, MainClass.classForRender.getPictureLoader()
 					.getImageAsInteger(s));}
+	public static void setColor(float r,float g, float b){
+		GL11.glColor3f(r/255f,g/255f,b/255f);
+	}
 	public static  void DrawLine(Location loc1, Location loc2){
 			GL11.glBegin(GL11.GL_LINES);
 			GL11.glVertex2f(loc1.x, loc1.z);
