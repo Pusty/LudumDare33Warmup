@@ -1,16 +1,17 @@
-package spy.gui;
+package spy.gui.features;
 
 import me.engine.location.Location;
+import spy.gui.*;
 
-public abstract class IPanel
+public class Form extends IPanel
 {
-	protected IPanel(Location loc, Location size, String text)
+
+	Form(Location loc, Location size, String text) 
 	{
-		m_location = loc;
-		m_size = size;
-		m_szText = text;
+		super(loc, size, text);
+
 	}
-	
+
 	public void Paint()
 	{
 		
@@ -41,7 +42,6 @@ public abstract class IPanel
 		
 	}
 	
-	public Location m_location;
-	public Location m_size;
-	public String m_szText;
+	boolean m_bMoving;
 }
+

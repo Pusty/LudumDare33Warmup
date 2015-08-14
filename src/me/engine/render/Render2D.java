@@ -468,6 +468,11 @@ public class Render2D {
 		GL11.glEnd();
 
 	}
+	
+	public float measureString(String str)
+	{
+		return str.length() * 1.f;
+	}
 
 	public static ByteBuffer[] getIcons(String path) {
 		try {
