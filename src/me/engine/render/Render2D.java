@@ -77,6 +77,23 @@ public class Render2D {
 
 	public void lookPos(Location loc, boolean t) {
 		int m = t ? 1 : -1;
+		if(loc.x < 8.5f || loc.z < 6.5f){
+			float nx = loc.x >= 8.5f ? loc.x : 8.5f;
+			float nz = loc.z >= 6.5f ? loc.z : 6.5f;
+		GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
+		}else if(loc.x > mainclass.getWorld().getSizeX()-8.5f || loc.z < 6.5f){
+			float nx = loc.x <= mainclass.getWorld().getSizeX()-8.5f ? loc.x : mainclass.getWorld().getSizeX()-8.5f;
+			float nz = loc.z >= 6.5f ? loc.z : 6.5f;
+			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
+		}else if(loc.x < 8.5f || loc.z > mainclass.getWorld().getSizeZ()-6.5f){
+			float nx = loc.x >= 8.5f ? loc.x : 8.5f;
+			float nz = loc.z <= mainclass.getWorld().getSizeZ()-6.5f ? loc.z : mainclass.getWorld().getSizeZ()-6.5f;
+			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
+		}else if(loc.x > mainclass.getWorld().getSizeX()-8.5f || loc.z > mainclass.getWorld().getSizeZ()-6.5f){
+			float nx = loc.x <= mainclass.getWorld().getSizeX()-8.5f ? loc.x : mainclass.getWorld().getSizeX()-8.5f;
+			float nz = loc.z <= mainclass.getWorld().getSizeZ()-6.5f ? loc.z : mainclass.getWorld().getSizeZ()-6.5f;
+			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
+		}else
 		GL11.glTranslatef(loc.getX() * -1 * m, loc.getZ() * -1 * m, 0);
 	}
 
@@ -171,18 +188,14 @@ public class Render2D {
 					int[] objInt = (int[]) objs[0];
 				for(int i=objInt.length-1;i>=0;i--){
 					if(objInt[i] == -5){
-						lookPos(looking,false);
-						mainclass.getWorld().getPlayer().renderShadow(mainclass);
-						lookPos(looking,true);
+						mainclass.getWorld().getPlayer().renderShadow(mainclass,looking);
 					}else{
 							entityarray[objInt[i]].renderShadow(mainclass);
 					}
 				}
 				for(int i=objInt.length-1;i>=0;i--){
 					if(objInt[i] == -5){
-						lookPos(looking,false);
-						mainclass.getWorld().getPlayer().render(mainclass);
-						lookPos(looking,true);
+						mainclass.getWorld().getPlayer().render(mainclass,looking);
 					}else{
 							entityarray[objInt[i]].render(mainclass);
 					}

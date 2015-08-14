@@ -139,7 +139,7 @@ public class Player extends EntityLiving {
 
 	public void render(MainClass m){
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0.5f, 0.5f, 0f);
+		GL11.glTranslatef(0.5f+this.getX(), 0.5f+this.getZ(), 0f);
 		String renderID = getRenderID();
 		glBindTexture(GL_TEXTURE_2D,m.getPictureLoader().getImageAsInteger(renderID));
 		glBegin(GL11.GL_QUADS);
@@ -156,7 +156,7 @@ public class Player extends EntityLiving {
 	}
 	public void renderShadow(MainClass m){
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0.5f, 0.5f, 0f);
+		GL11.glTranslatef(0.5f+this.getX(), 0.5f+this.getZ(), 0f);
 		GL11.glTranslatef(0, -0.15f, 0f);
 		glBindTexture(GL_TEXTURE_2D,m.getPictureLoader().getImageAsInteger("shadow"));
 		glBegin(GL11.GL_QUADS);
@@ -182,7 +182,47 @@ public class Player extends EntityLiving {
 	}
 
 
-	
+	public void render(MainClass m, Location looking) {
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0.5f+looking.getX(), 0.5f+looking.getZ(), 0f);
+		String renderID = getRenderID();
+		glBindTexture(GL_TEXTURE_2D,m.getPictureLoader().getImageAsInteger(renderID));
+		glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0f, 1f);
+		GL11.glVertex2f(-0.5f,0.5f);
+		GL11.glTexCoord2f(1f, 1f);
+		GL11.glVertex2f(0.5f,0.5f);
+		GL11.glTexCoord2f(1f, 0f);
+		GL11.glVertex2f(0.5f,-0.5f);
+		GL11.glTexCoord2f(0f, 0f);
+		GL11.glVertex2f(-0.5f,-0.5f);	
+		GL11.glEnd();
+		GL11.glPopMatrix();
+	}
+
+
+
+
+	public void renderShadow(MainClass m, Location looking) {
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0.5f+looking.getX(), 0.5f+looking.getZ(), 0f);
+		GL11.glTranslatef(0, -0.15f, 0f);
+		glBindTexture(GL_TEXTURE_2D,m.getPictureLoader().getImageAsInteger("shadow"));
+		glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0f, 1f);
+		GL11.glVertex2f(-0.5f,0.5f);
+		GL11.glTexCoord2f(1f, 1f);
+		GL11.glVertex2f(0.5f,0.5f);
+		GL11.glTexCoord2f(1f, 0f);
+		GL11.glVertex2f(0.5f,-0.5f);
+		GL11.glTexCoord2f(0f, 0f);
+		GL11.glVertex2f(-0.5f,-0.5f);	
+		GL11.glEnd();
+		GL11.glTranslatef(0f, 0.15f, 0f);
+		GL11.glPopMatrix();
+	}
+
+
 	
 
 
