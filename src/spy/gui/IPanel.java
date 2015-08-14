@@ -7,7 +7,7 @@ public abstract class IPanel
 {
 	public void Paint(Render2D g)
 	{
-		sdfasdf
+		sdfasdffghj
 	}
 
 	public void LeftMouseDown(Mouse mouse)
