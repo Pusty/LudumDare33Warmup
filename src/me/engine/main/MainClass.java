@@ -31,7 +31,7 @@ public abstract class MainClass {
 	String dialogFrom=null;
 	int dialogCur=0;
 	SoundPlayer soundplayer=null;
-	
+	public static MainClass classForRender;
 	
 	DataClient dataclient;
 	public MainClass(){
@@ -115,6 +115,7 @@ public abstract class MainClass {
 		ControlInit();
 		GameTickInit();
 		postInit();
+		classForRender=this;
 	}
 	
 	public void preInit(){
