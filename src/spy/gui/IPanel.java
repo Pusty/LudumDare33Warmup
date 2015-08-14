@@ -1,10 +1,11 @@
 package spy.gui;
 
 import me.engine.location.Location;
+import me.engine.render.Render2D;
 
 public abstract class IPanel
 {
-	public void Paint()
+	public void Paint(Render2D g)
 	{
 		
 	}
@@ -34,5 +35,6 @@ public abstract class IPanel
 		
 	}
 	
-	public 
+	public Location m_location;
+	public String m_szText;
 }
