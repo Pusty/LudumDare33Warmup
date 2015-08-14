@@ -615,7 +615,7 @@ public class Render2D {
 		GL11.glTranslatef(textLoc.x*-1f, textLoc.z*-1f, 0f);
 	}
 	public static  void DrawTexture(float x,float y,float w,float h){
-		
+		//Update
 		glBegin(GL_QUADS);
 		GL11.glTexCoord2f(0f, 1f);
 		GL11.glVertex2f(x,y);
