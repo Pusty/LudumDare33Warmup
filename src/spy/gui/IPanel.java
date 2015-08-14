@@ -23,7 +23,7 @@ public abstract class IPanel
 	
 	public void LeftMouseUp(Mouse mouse)
 	{
-		//comment
+		//commentd
 	}
 	
 	public void RightMouseDown(Mouse mouse)
