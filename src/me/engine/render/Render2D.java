@@ -673,5 +673,16 @@ public class Render2D {
 			GL11.glVertex2f(loc2.x, loc2.z);
 			GL11.glEnd();
 	}
-
+	
+	public static void BeginClip(float x, float y, float w, float h)
+	{
+		GL11.glEnable( GL11.GL_SCISSOR_TEST );
+		GL11.glScissor((int)x,(int)y,(int)x+(int)w,(int)y+(int)h);
+	}
+	
+	public static void EndClip()
+	{
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+	
 }
