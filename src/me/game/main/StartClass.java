@@ -12,27 +12,24 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import me.engine.location.Location;
-import me.engine.main.Cons;
 import me.engine.main.Controls;
 import me.engine.main.GameTickHandler;
+import me.engine.main.Inventory;
 import me.engine.main.MainClass;
 import me.engine.multiplayer.DataClient;
 import me.engine.block.HandledBlock;
-import me.engine.entity.Entity;
-import me.engine.entity.EntityBloodSlime;
-import me.engine.entity.EntityPortal;
-import me.engine.entity.EntitySlime;
-import me.engine.entity.EntityTree;
-import me.engine.entity.NPCEntity;
 import me.engine.entity.Player;
+import me.engine.gui.Button;
+import me.engine.gui.GuiScreen;
+import me.engine.gui.SkillInventory;
+import me.engine.world.LevelScript;
 import me.engine.world.World;
 import me.engine.render.AnimationHandler;
 import me.engine.render.Render2D;
 import me.engine.render.SheetLoader;
+import me.game.leveldesign.Level01;
 
 public class StartClass extends MainClass {
-	public static int worldID = -1;
-	public static int worldID_old = -1;
 	public static boolean light=false;
 	public static boolean online=true;
 	public void preInit() {
@@ -264,10 +261,6 @@ public class StartClass extends MainClass {
 		this.getGameTickHandler().startGameTick();
 	}
 
-	public static void main(String[] args) {
-		StartClass gameclass = new StartClass();
-		gameclass.startInit();
-	}
 
 	public void postInit(){
 		if(online)
@@ -275,8 +268,9 @@ public class StartClass extends MainClass {
 	}
 	
 	public void load(int mapID) {
+		this.loadMap();
+		getTextLoader().addIndex();
 		this.setTimeRunning(false);
-
 		try {
 			Image img = ImageIO.read(new File(System.getProperty("user.dir")
 					+ "\\data\\map_" + mapID + ".png"));
@@ -298,6 +292,8 @@ public class StartClass extends MainClass {
 				+ ".txm");
 		File f2 = new File(System.getProperty("user.dir") + "\\data\\smap_" + mapID
 				+ ".txm");
+		
+		LevelScript levelscript = LevelScript.getLevel(mapID);
 		String line = "";
 		try {
 			if (!f.exists() || !f2.exists()) {
@@ -310,7 +306,7 @@ public class StartClass extends MainClass {
 					InputStreamReader isr = new InputStreamReader(fi);
 					BufferedReader br = new BufferedReader(isr);
 					line = br.readLine();
-					int index = 0;
+//					int index = 0;
 					int se = 40;
 					List<int[]> blockarray = new ArrayList<int[]>();
 					while (line != null) {
@@ -349,25 +345,33 @@ public class StartClass extends MainClass {
 							if(metaID-7 == mapID)
 								player = new Location(x,world.getSizeZ()-z-1);
 							else if(metaID == 3)
-								world.addEntity(new EntityTree(this,x,world.getSizeZ()-z-1));
-//							else if(metaID == 4)
+								levelscript.addTree(this,world,metaID,x,world.getSizeZ()-z-1);	
+							else if(metaID == 4)
+								levelscript.addNPC(this,world,metaID,x,world.getSizeZ()-z-1);
 //								world.addEntity(new NPCEntity(this,x,world.getSizeZ()-z,"player3"));
 							else if(metaID == 5)
-								world.addEntity(new EntityBloodSlime(this,x,world.getSizeZ()-z-1));
-//							else if(metaID == 6)
-//								world.addEntity(new EntityTree(this,x,z));
-//							else if(metaID == 7)
-//								world.addEntity(new EntityTree(this,x,z));
+								levelscript.addEnemy(this,world,metaID,x,world.getSizeZ()-z-1);
+							else if(metaID == 6)
+								levelscript.addSpecial1(this,world,metaID,x,world.getSizeZ()-z-1);
+							else if(metaID == 7)
+								levelscript.addSpecial2(this,world,metaID,x,world.getSizeZ()-z-1);
 							
 							if(metaID > 7)
-								world.addEntity(new EntityPortal(this,x,world.getSizeZ()-z-1,metaID-7==mapID,metaID-7,true));
-							x++;
+								levelscript.addPortal(this,world,metaID,x,world.getSizeZ()-z-1);
+							
+								x++;
 						}
 						line = br.readLine();
 						z++;
 					}
 				}
-				world.setPlayer(new Player(this, (int) player.x, (int) player.z));
+				if(getSavedData().getData("world") == getSavedData().getData("worldOld") && (float)getSavedData().getData("posX") >= 0)
+					player = new Location((float)getSavedData().getData("posX"),(float)getSavedData().getData("posZ"));
+				getSavedData().putData("worldOld",(int)getSavedData().getData("world"));
+				getSavedData().putData("posX",player.x);
+				getSavedData().putData("posZ",player.z);
+				world.setPlayer(new Player(this, player.x,  player.z));
+				world.getPlayer().setHealth((int)getSavedData().getData("health"));
 //				world.calcLight();
 				this.setWorld(world);
 				reRender(world);
@@ -379,10 +383,11 @@ public class StartClass extends MainClass {
 			e.printStackTrace();
 		}
 		this.setTimeRunning(true);
+		this.setLoaded();
+		getSavedData().saveToFile("player.txt");
 	}
 
 	public static boolean rerender = false;
-	public static String version =" v0.1";
 
 	private void reRender(World w) {
 		Render2D.chunkList = new int[w.getChunkArray().length];
@@ -390,12 +395,38 @@ public class StartClass extends MainClass {
 			Render2D.chunkList[i] = -1;
 
 	}
-
+	public static void openInventory(MainClass m){
+		if(m.getGui() != null)return;
+		 GuiScreen gui = new GuiScreen(3);	
+		gui.setGuiPart(0, new Button(new Location(6,-10),6,2,0,18,60,100,"Exit"){
+			@Override
+			public void buttonClick(MainClass m,float mx,float mz){
+				Controls.close(m);
+			}
+		});
+		gui.setGuiPart(1, new SkillInventory(new Location(-4.5f,1.75f)));
+		
+		gui.setGuiPart(2, new Button(new Location(-12,-10),6,2,0,18,0,40,"Use"){
+			@Override
+			public void buttonClick(MainClass m,float mx,float mz){
+				Inventory.useItem(m, ((SkillInventory)(m.getGui().getGuiPart(1))).getItemIndex());
+			}
+		});
+		m.setGui(gui);
+	}
+	public static void closeInventory(MainClass m){m.setGui(null);}
 	@Override
 	public void WorldInit() {
-		worldID = 1;
-		worldID_old = 1;
-		load(worldID);
+		LevelScript.addLevel(1, new Level01());
+	
+		getTextLoader().loadFromFile("loading.txt");
+		if(!this.getLoadGame())
+		getSavedData().loadFromFile("player.txt");
+		else
+		getSavedData().createFromNew();
+		
+
+		load((int)getSavedData().getData("world"));
 
 		this.setDialog("Me",
 				"Where am I? What is this ? Why is everything smelling like cake ?");
@@ -411,5 +442,7 @@ public class StartClass extends MainClass {
 	getSoundPlayer().addToBuffer("exp1",System.getProperty("user.dir") + "\\util\\exp_1.wav", false,1f);
 	getSoundPlayer().addToBuffer("hit0",System.getProperty("user.dir") + "\\util\\hit_0.wav", false,1f);
 	}
+
+
 
 }

@@ -5,8 +5,6 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 import me.engine.main.MainClass;

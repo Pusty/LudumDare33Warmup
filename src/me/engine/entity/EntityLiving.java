@@ -1,24 +1,14 @@
 package me.engine.entity;
 
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glEnd;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
 
 import me.engine.location.Location;
 import me.engine.location.Velocity;
 import me.engine.skill.Skill;
-import me.engine.world.Chunk;
 import me.engine.entity.Entity;
-import me.engine.main.Controls;
 import me.engine.main.MainClass;
 
 public class EntityLiving extends Entity {
@@ -324,12 +314,17 @@ public class EntityLiving extends Entity {
 	}
 	
 	public int hasEffect(String effect){
+		try{
+			if(effect == null)return -1;
 		int effectindex=Status.valueOf(Status.class, effect).ordinal();
 		int currently=0;
 		if(status.containsKey(effectindex)){
 		currently=status.get(effectindex);
 		}else return -1;
 			return currently;
+		}catch(Exception e){
+			return -1;
+		}
 			
 	}
 	

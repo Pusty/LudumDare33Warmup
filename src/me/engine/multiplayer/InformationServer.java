@@ -9,12 +9,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import me.engine.main.Controls;
-
-import me.engine.main.GameTickHandler;
-
-import me.engine.render.Render2D;
-import me.engine.render.SheetLoader;
 
 
 
@@ -24,9 +18,12 @@ public class InformationServer extends Side implements Runnable{
 	DatagramSocket  serverSocket;
 	ServerSideClient[] clients;
 	PacketHandler packethandler;
-	
-	
+	boolean running=true;
+	int port;
 	public InformationServer(int port){
+		this.port = port;
+	}
+	public void start(){
 		try {
 	        serverSocket = new DatagramSocket (port);
 	        clients = new ServerSideClient[25];
@@ -37,7 +34,10 @@ public class InformationServer extends Side implements Runnable{
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void stop(){
+		running=false;	
+	}
 	
 	public PacketHandler getPacketHandler(){return packethandler;}
 	public void tryToGetData(){
@@ -95,9 +95,9 @@ public class InformationServer extends Side implements Runnable{
 
 
 	public void run() {
-		final InformationServer server=this;
+//		final InformationServer server=this;
         System.out.println("Server started!");
-		while(true){
+		while(running){
 			tryToGetData();
 		/*	try {
 				Thread.sleep(50);

@@ -1,21 +1,16 @@
 package me.engine.main;
 
-import java.util.ArrayList;
-import java.util.Random;
+
 
 import me.engine.entity.Entity;
 import me.engine.entity.EntityLiving;
 import me.engine.entity.EntityMonster;
 import me.engine.entity.EntityPortal;
-import me.engine.entity.EntitySlime;
 import me.engine.entity.EntityTree;
 import me.engine.entity.NPCEntity;
-import me.engine.entity.Particle;
-import me.engine.entity.Player;
 import me.engine.entity.Projectile;
 
 import me.engine.location.Location;
-import me.engine.location.Velocity;
 import me.engine.world.Chunk;
 import me.game.main.StartClass;
 
@@ -31,7 +26,7 @@ public class GameTickHandler {
 			@Override
 			public void run() {
 				while (mainclass.isRunning()) {
-					if (mainclass.isTimeRunning()) {
+					if (mainclass.isTimeRunning() && mainclass.hasMapLoaded()) {
 						gameTick();
 					}
 					try {
@@ -49,7 +44,7 @@ public class GameTickHandler {
 			@Override
 			public void run() {
 				while (mainclass.isRunning()) {
-					if (mainclass.isTimeRunning()) {
+					if (mainclass.isTimeRunning() && mainclass.hasMapLoaded()) {
 						gameTickEntity();
 					}
 					try {
@@ -126,9 +121,9 @@ int tickupdate=40;
 				if (Location.getDistance(mainclass.getWorld().getPlayer()
 						.getLocation(), ep.getLocation()) < 0.5f) {
 					// LOADING NEW MAP
-					StartClass.worldID_old = StartClass.worldID;
-					StartClass.worldID = ep.getPortal();
-					((StartClass) mainclass).load(StartClass.worldID);
+					mainclass.getSavedData().putData("worldOld",(int)mainclass.getSavedData().getData("world"));
+					mainclass.getSavedData().putData("world",ep.getPortal());
+					((StartClass) mainclass).load((int)mainclass.getSavedData().getData("world"));
 					System.out.println("Load new map");
 				}
 			} else if (mainclass.getWorld().getEntityArray()[i] instanceof Projectile) {
@@ -162,6 +157,10 @@ int tickupdate=40;
 		mainclass.getWorld().getPlayer().tick(mainclass);
 		movingTickEntity(mainclass, mainclass.getWorld().getPlayer());
 		mainclass.getWorld().getPlayer().addRender();
+		if(ticks == tickupdate-1){
+			mainclass.getSavedData().putData("posX",mainclass.getWorld().getPlayer().getX());
+			mainclass.getSavedData().putData("posZ",mainclass.getWorld().getPlayer().getZ());
+		}
 //		if (mainclass.getWorld().getPlayer().getHealth() < 1)
 //			mainclass.setTimeRunning(false);
 	}

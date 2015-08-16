@@ -6,8 +6,6 @@ import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glEnd;
 
-import java.awt.Window.Type;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;

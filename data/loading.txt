@@ -1,0 +1,7 @@
+Potions heal up to 2 Lives
+Cheese is actually yellow
+You can equip Skills within the inventory
+Every character has a unique skill
+SPACE activates the special skill
+SHIFT activates the equipped skill
+404 cheese not found

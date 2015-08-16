@@ -1,11 +1,7 @@
 package me.engine.main;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import me.engine.block.BlockHandler;
+import me.engine.gui.GuiScreen;
 import me.engine.multiplayer.DataClient;
 import me.engine.render.PictureLoader;
 import me.engine.sound.SoundPlayer;
@@ -13,6 +9,7 @@ import me.engine.text.TextPopup;
 import me.engine.world.World;
 
 public abstract class MainClass {
+	public static  MainClass classForRender;
 	boolean running;
 	boolean timerunning;
 //	SavedStats savedstats;
@@ -31,9 +28,14 @@ public abstract class MainClass {
 	String dialogFrom=null;
 	int dialogCur=0;
 	SoundPlayer soundplayer=null;
-	public static MainClass classForRender;
-	
+	SavedData savedData;
+	boolean fullscreen;
+	boolean vsync;
+	float soundpower;
+	boolean load;
 	DataClient dataclient;
+	GuiScreen gui;
+	TextLoader textloader;
 	public MainClass(){
 		running=true;
 		timerunning=true;
@@ -43,6 +45,41 @@ public abstract class MainClass {
 		blockhandler = new BlockHandler();
 		timespeed=1f;
 		soundplayer=new SoundPlayer();
+		savedData=new SavedData();
+		gui=null;
+		textloader = new TextLoader();
+		classForRender=this;
+	}
+	
+	public TextLoader getTextLoader(){return textloader;}
+	public GuiScreen getGui(){return gui;}
+	public void setGui(GuiScreen g){gui=g;}
+	public SavedData getSavedData(){
+		return savedData;
+	}
+	public void setFullscreen(boolean f) {
+		fullscreen=f;
+	}
+	public boolean getFullscreen(){
+		return fullscreen;
+	}
+	public void setVSync(boolean v){
+		vsync=v;
+	}
+	public boolean getVSync(){
+		return vsync;
+	}
+	public void setSoundPower(float p){
+		soundpower=p;
+	}
+	public float getSoundPower(){
+		return soundpower;
+	}
+	public void setLoadGame(boolean b){
+		load=b;
+	}
+	public boolean getLoadGame(){
+		return load;
 	}
 	public DataClient getClient(){
 		return dataclient;
@@ -115,7 +152,6 @@ public abstract class MainClass {
 		ControlInit();
 		GameTickInit();
 		postInit();
-		classForRender=this;
 	}
 	
 	public void preInit(){
@@ -156,6 +192,23 @@ public abstract class MainClass {
 			popuplist = textPopup;
 	}
 	public TextPopup[] getTextPopupArray(){return popuplist;}
+	public void addLoading(){if(mapLoading>0)mapLoading--;}
+	public void setLoaded(){mapLoaded=true;}
+	int mapLoading=0;
+	boolean mapLoaded=false;
+	public void loadMap(){
+		mapLoading=100;
+		mapLoaded=false;
+	}
+	public int getMapLoading(){
+		return mapLoading;
+	}
+	public boolean hasMapLoaded() {
+		return mapLoaded && mapLoading<=0;
+	}
+	public String getLoading() {
+		return mapLoaded+"|"+mapLoading;
+	}
 
 
 	

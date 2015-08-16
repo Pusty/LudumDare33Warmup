@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.net.DatagramPacket;
 
 import me.engine.main.MainClass;
-import me.engine.text.TextPopup;
 
 public class PacketPing00 extends HandlingPacket {
 
@@ -18,7 +17,7 @@ public class PacketPing00 extends HandlingPacket {
 			DatagramPacket receivePacket,MainClass m) {
 		if(isClient()){
 	
-				client().gotmsg=true;
+//				client().gotmsg=true;
 				m.getWorld().getPlayer().addStatus("SHOOT",240,false);
 		}else{
 			server().sendPacket(new Packet(server(),0,"ping"),receivePacket.getAddress(),receivePacket.getPort());

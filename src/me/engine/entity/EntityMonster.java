@@ -1,18 +1,9 @@
 package me.engine.entity;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 
 import java.util.Random;
 
-import me.engine.location.Location;
-import me.engine.location.Velocity;
-import me.engine.main.Controls;
 import me.engine.main.MainClass;
-import me.engine.skill.Skill;
-
-import org.lwjgl.opengl.GL11;
 
 
 public class EntityMonster extends EntityLiving {

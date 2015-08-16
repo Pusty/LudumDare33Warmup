@@ -1,19 +1,11 @@
 package me.engine.world;
 
-import java.util.Random;
 
 import me.engine.entity.Entity;
-import me.engine.entity.EntityLiving;
-import me.engine.entity.EntityTree;
-import me.engine.entity.NPCEntity;
 import me.engine.entity.Particle;
 import me.engine.entity.Player;
-import me.engine.entity.ProjectileFlame;
 import me.engine.location.Location;
-import me.engine.location.Velocity;
 import me.engine.main.MainClass;
-import me.engine.render.Render2D;
-import me.game.main.StartClass;
 
 public class World {
 	int sizex;

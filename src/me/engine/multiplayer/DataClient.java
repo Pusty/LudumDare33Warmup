@@ -3,21 +3,16 @@ package me.engine.multiplayer;
 
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import me.engine.location.Location;
-import me.engine.main.Controls;
-import me.engine.main.GameTickHandler;
 import me.engine.main.MainClass;
-import me.engine.render.Render2D;
-import me.engine.render.SheetLoader;
+
 
 
 public class DataClient extends Side implements Runnable{

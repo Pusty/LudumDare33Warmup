@@ -4,22 +4,16 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.openal.*;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.WaveData;
 
-import static org.lwjgl.openal.AL10.*;
 
 public class SoundPlayer {
 	int NUM_BUFFERS = 0;
@@ -40,7 +34,7 @@ public class SoundPlayer {
 		names.put(name,urls.size()-1);
 	}
 
-	public int fillALBuffer(){
+	public int fillALBuffer(float pow){
 			try {
 				NUM_BUFFERS= urls.size();
 				source = BufferUtils.createIntBuffer(NUM_BUFFERS);
@@ -64,7 +58,7 @@ public class SoundPlayer {
 			    for(int i=0;i<NUM_BUFFERS;i++){
 			    AL10.alSourcei(source.get(i), AL10.AL_BUFFER,   buffer.get(i) );
 			    AL10.alSourcef(source.get(i), AL10.AL_PITCH,    1.0f          );
-			    AL10.alSourcef(source.get(i), AL10.AL_GAIN,    volume.get(i));
+			    AL10.alSourcef(source.get(i), AL10.AL_GAIN,    volume.get(i) * pow);
 			    if(!bools.get(i))
 			    AL10.alSourcei(source.get(i), AL10.AL_LOOPING,  AL10.AL_FALSE);    
 			    else
@@ -139,7 +133,7 @@ public class SoundPlayer {
 		}
 	}
 
-	public void initSoundPlayer(){
+	public void initSoundPlayer(float pow){
 		try {
 			AL.create();
 		} catch (LWJGLException le) {
@@ -148,7 +142,7 @@ public class SoundPlayer {
 		}
 		AL10.alGetError();
 		
-		if (fillALBuffer() == AL10.AL_FALSE) {
+		if (fillALBuffer(pow) == AL10.AL_FALSE) {
 			System.out.println("Error loading data.");
 			return;
 		}

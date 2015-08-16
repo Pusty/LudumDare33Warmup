@@ -1,25 +1,12 @@
 package me.engine.entity;
 
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glEnd;
 
-import java.util.ArrayList;
-
-import me.engine.location.Location;
 import me.engine.location.TempVelocity;
 import me.engine.location.Velocity;
-import me.engine.main.Controls;
 import me.engine.main.MainClass;
 import me.engine.render.Animation;
-import me.engine.render.Render2D;
 import me.engine.skill.Skill;
-import me.engine.world.Chunk;
-import me.game.main.StartClass;
 
-import org.lwjgl.opengl.GL11;
 
 public class Projectile extends Entity{
 	MainClass main;

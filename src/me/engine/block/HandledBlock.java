@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL11.glEnd;
 import org.lwjgl.opengl.GL11;
 
 import me.engine.entity.Entity;
-import me.engine.location.Location;
 import me.engine.main.MainClass;
 import me.engine.world.World;
 import me.game.main.StartClass;

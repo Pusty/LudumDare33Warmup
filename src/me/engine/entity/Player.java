@@ -1,19 +1,18 @@
 package me.engine.entity;
 
-import static org.lwjgl.opengl.GL11.GL_QUADS;
+
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
 import java.util.Random;
 
 import me.engine.entity.EntityLiving;
 import me.engine.location.Location;
 import me.engine.location.Velocity;
 import me.engine.main.Controls;
+import me.engine.main.Inventory;
 import me.engine.main.MainClass;
 import me.engine.skill.*;
 
@@ -22,13 +21,17 @@ import org.lwjgl.opengl.GL11;
 public class Player extends EntityLiving {
 
 	Location mousevelocity;
-	public Player(MainClass m,int x, int y) {
+	public Player(MainClass m,float x, float y) {
 		super(m ,x, y,1f,1f);
 //		this.setMainItem(new Item(30));
 //		this.setUtilItem(new Item(31));
-		setSkill(0,new SkillFireball());
+		
+		setSkill(0,Inventory.skillByIndex((int)m.getSavedData().getData("skill")));
 	}
 	
+	public void setSkill(int id,Skill s){
+		skills[id]=s;
+		main.getSavedData().putData("skill", Inventory.indexBySkill(s));}
 
 	public Entity createByString(MainClass m,String s,String split){
 		Entity e = null;
@@ -68,7 +71,11 @@ public class Player extends EntityLiving {
 		return Location.getNorm(getMouseLocation()).toVelocity();
 		return new Velocity(0,0);
 	}
-
+	@Override
+	public void setHealth(int h) {
+		super.setHealth(h);
+		main.getSavedData().putData("health", h);
+	}
 
 	Random random = new Random();
 	public void tick(MainClass m){

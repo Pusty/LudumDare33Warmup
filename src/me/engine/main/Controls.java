@@ -1,10 +1,6 @@
 package me.engine.main;
 
-import static me.engine.main.Cons.*;
-import static org.lwjgl.opengl.GL11.glDeleteLists;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.Random;
 
 import me.engine.entity.Entity;
@@ -12,22 +8,12 @@ import me.engine.entity.EntityLiving;
 import me.engine.entity.EntityPortal;
 import me.engine.entity.NPCEntity;
 import me.engine.entity.Player;
-import me.engine.entity.ProjectileFlame;
 import me.engine.location.Location;
-import me.engine.location.TempVelocity;
-import me.engine.location.Velocity;
-import me.engine.render.Render2D;
-import me.engine.text.TextPopup;
-import me.engine.world.Chunk;
 import me.game.main.StartClass;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 public class Controls {
 	MainClass mainclass;
@@ -49,7 +35,7 @@ public class Controls {
 					try {
 						controls();
 						if (Display.isCloseRequested()) {
-							mainclass.setRunning(false);
+							close(mainclass);
 //							System.exit(0);
 						}
 					} catch (Exception e) {
@@ -77,9 +63,11 @@ public class Controls {
 
 	boolean mousePressed=false;
 	boolean f5pressed=false;
+	boolean escPressed=false;
 
 	
 	public void controls() {
+		
 		if (!ispressedDebug && Keyboard.isKeyDown(Keyboard.KEY_F1)) {
 			ispressedDebug = true;
 			mainclass.toggleDebug();
@@ -125,19 +113,33 @@ public class Controls {
 			if (cooldown > 0)
 				cooldown--;
 
+			
+			
 	
 
 			float bx = (mx - (mainclass.getWidth() / 2f)) / 29f - 0.5f;
 			float bz = (mz - (mainclass.getHeight() / 2f)) / 29f - 0.5f;
+	
+	
 
+			if(!escPressed && Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) ){
+				escPressed=true;
+				if(mainclass.getDialog() == null){
+				if(mainclass.getGui()==null)StartClass.openInventory(mainclass);
+				else StartClass.closeInventory(mainclass);
+				}
+				
+			}else if(escPressed && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){escPressed=false;}
+			
+			
 			if(mainclass.isTimeRunning()){
 			mainclass.getWorld().getPlayer()
 					.setMouseLocation(new Location(bx, bz));
 
-			float cmx = mainclass.getWorld().getPlayer().getMouseLocation()
-					.getX();
-			float cmz = mainclass.getWorld().getPlayer().getMouseLocation()
-					.getZ();
+//			float cmx = mainclass.getWorld().getPlayer().getMouseLocation()
+//					.getX();
+//			float cmz = mainclass.getWorld().getPlayer().getMouseLocation()
+//					.getZ();
 			}
 
 			if (!Mouse.isButtonDown(0))
@@ -146,7 +148,7 @@ public class Controls {
 			if (!Keyboard.isKeyDown(Keyboard.KEY_C))
 				ispressedChange = false;
 
-			if(Mouse.isButtonDown(1) && mainclass.getDialog() == null){
+			if(Mouse.isButtonDown(1) && mainclass.getDialog() == null && mainclass.getGui() == null){
 				Random random = new Random();
 				String endtext= null;
 				String name=null;
@@ -173,14 +175,26 @@ public class Controls {
 				mainclass.setDialog(name,endtext);
 			}
 			
-			if(Mouse.isButtonDown(0) && mainclass.getDialog()!=null&&mainclass.getDialogFrom()!=null && !mousePressed){
+			{
+				if(mainclass.getGui() != null)
+					mainclass.getGui().tick();				
+			}
+			
+			if(Mouse.isButtonDown(0) && !mousePressed){
+				if(mainclass.getDialog()!=null &&mainclass.getDialogFrom()!=null){
 				mainclass.addDialogCur(1);
+				}else if(mainclass.getGui() != null){
+					mainclass.getGui().click(mainclass, mx, mz);
+				}else if(mainclass.getWorld().getPlayer().getHealth() <= 0){
+					restart(mainclass);
+				}else
+//				mainclass.getSavedData().printOutAll();
 				mousePressed=true;
 			}else if(!Mouse.isButtonDown(0)){
 				mousePressed=false;
 			}
 
-			if (mainclass.isTimeRunning()) {
+			if (mainclass.isTimeRunning() && mainclass.hasMapLoaded()) {
 
 				if (Keyboard.isKeyDown(Keyboard.KEY_1))
 					mainclass.setTimeSpeed(1f);
@@ -214,47 +228,12 @@ public class Controls {
 					Location to=new Location(0,0);
 					for(Entity e:mainclass.getWorld().getEntityArray()){
 						if(e==null || !(e instanceof EntityPortal))continue;
-						if(((EntityPortal)e).isFrom() && ((EntityPortal)e).getPortal() == StartClass.worldID_old)to = e.getLocation().clone();
+						if(((EntityPortal)e).isFrom() && ((EntityPortal)e).getPortal() == (int)mainclass.getSavedData().getData("worldOld"))to = e.getLocation().clone();
 					}
 					mainclass.getWorld().getPlayer().getLocation().set(to);
 				}
 				
-				if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
-					entityLocations[0]=mainclass.getWorld().getPlayer().getLocation().clone();
-					Location goal = mainclass.getWorld().getPlayer().getMouseLocation().clone().add(mainclass.getWorld().getPlayer().getLocation());
-					Velocity velo = mainclass.getWorld().getPlayer().getMoveDirection();
-					for(int i=1;i<entityLocations.length;i++){
-						Location l = entityLocations[i-1];
-						velo = new Velocity(goal.x - l.x,goal.z-l.z);
-						velo = Velocity.getNorm(velo);
-						Random r = new Random();
-						float angle = r.nextInt(360);
-						Velocity vel =
-								//new Location((float)Math.cos(Math.toRadians(angle)),(float)Math.sin(Math.toRadians(angle)));
-								new Velocity(velo.x,velo.z);
-						Location loc = new Location(l.x+vel.x,l.z+vel.z);
-						Location shortestloc = loc.clone();
-						float shortdis = Float.POSITIVE_INFINITY;
-						if(!valid(loc.add(new Location(-0.5f,-0.5f)))){
-							for(int a=0;a<360;a=a+10){
-								angle = a;
-								vel = new Velocity((float)Math.cos(Math.toRadians(angle)),(float)Math.sin(Math.toRadians(angle)));
-								loc = new Location(l.x+vel.x,l.z+vel.z);
-								if(valid(loc.add(new Location(-0.5f,-0.5f)))){
-									if(Velocity.getDistance(velo, vel) < shortdis){
-										shortdis=(float) Location.getDistance(goal, loc);
-										shortestloc=loc.clone();
-									}
-								}
-							}
-						}
-//						while(!valid(loc.add(new Location(-0.5f,-0.5f)))){
-//							angle = r.nextInt(360);
-//							loc = new Location(l.x+(float)Math.cos(Math.toRadians(angle)),l.z+(float)Math.sin(Math.toRadians(angle)));
-//						}
-						entityLocations[i]=shortestloc;
-					}
-				}
+		
 				if (Keyboard.isKeyDown(Keyboard.KEY_X)) {
 					debugAnimation=0;
 					mainclass.getSoundPlayer().unpauseAll();
@@ -274,16 +253,15 @@ public class Controls {
 				
 				if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 					Player p = mainclass.getWorld().getPlayer();
+					if(p.getHealth() <= 0){
+						restart(mainclass);
+					}else
 					p.addStatus("SKILL1",999999,false);
 
 				}
 			}
 		}
-		if (Display.isCloseRequested()) {
-			mainclass.setTimeRunning(true);
-			mainclass.setRunning(false);
-//			System.exit(0);
-		}
+
 
 	}
 	public static int debugAnimation=0;
@@ -303,5 +281,25 @@ public class Controls {
 		}*/
 		return true;
 	}
+	public static void close(MainClass m) {
+		m.getSavedData().saveToFile("player.txt");
+		m.setTimeRunning(true);
+		m.setRunning(false);
+	}
+
+	public static void restart(MainClass m){
+		m.getWorld().getPlayer().setHealth(m.getWorld().getPlayer().getStartHealth());
+		m.getSavedData().putData("worldOld",(int)m.getSavedData().getData("world"));
+		m.getSavedData().putData("world",(int)m.getSavedData().getData("world"));
+		((StartClass) m).load((int)m.getSavedData().getData("world"));
+		
+		Location to=new Location(0,0);
+		for(Entity e:m.getWorld().getEntityArray()){
+			if(e==null || !(e instanceof EntityPortal))continue;
+			if(((EntityPortal)e).isFrom() && ((EntityPortal)e).getPortal() == (int)m.getSavedData().getData("worldOld"))to = e.getLocation().clone();
+		}
+		m.getWorld().getPlayer().getLocation().set(to);
+	}
+	
 
 }

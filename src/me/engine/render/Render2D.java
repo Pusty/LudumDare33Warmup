@@ -1,33 +1,11 @@
 package me.engine.render;
 
-import static org.lwjgl.opengl.GL11.GL_COMPILE;
-import static org.lwjgl.opengl.GL11.GL_FRONT;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_SHININESS;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glCallList;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glDeleteLists;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glEndList;
-import static org.lwjgl.opengl.GL11.glGenLists;
-import static org.lwjgl.opengl.GL11.glMaterialf;
-import static org.lwjgl.opengl.GL11.glNewList;
-import static org.lwjgl.opengl.GL11.glNormal3f;
-import static org.lwjgl.opengl.GL11.glVertex3f;
 
-import java.awt.Color;
+import static org.lwjgl.opengl.GL11.*;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -36,33 +14,26 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import me.engine.entity.EntityLiving;
 import me.engine.entity.Particle;
-import me.engine.entity.Player;
 import me.engine.location.Location;
-import me.engine.location.Velocity;
 import me.engine.text.TextPopup;
 import me.engine.util.Sorter;
 import me.engine.world.Chunk;
-import me.engine.world.World;
 import me.engine.entity.Entity;
-import me.engine.main.Controls;
 import me.engine.main.GameTickHandler;
+import me.engine.main.Inventory;
 import me.engine.main.MainClass;
 import me.game.main.StartClass;
+
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
-import org.lwjgl.input.Mouse;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.vector.Vector4f;
 
 public class Render2D {
 
@@ -72,29 +43,34 @@ public class Render2D {
 	Entity[] entitysbehindplayer;
 	public Render2D(MainClass m) {
 		mainclass = m;
-
 	}
 
 	public void lookPos(Location loc, boolean t) {
 		int m = t ? 1 : -1;
-		if(loc.x < 8.5f || loc.z < 6.5f){
-			float nx = loc.x >= 8.5f ? loc.x : 8.5f;
+		float ex = 0f;
+		if(mainclass.getHeight()/(float)mainclass.getWidth() == 3f/4f){
+			
+		}else{ex=ex+1.5f;}
+		if(mainclass.getFullscreen())ex=ex+1f;
+		if(loc.x < (8.5f+ex) || loc.z < 6.5f){
+			float nx = loc.x >= (8.5f+ex) ? loc.x : (8.5f+ex);
 			float nz = loc.z >= 6.5f ? loc.z : 6.5f;
 		GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
-		}else if(loc.x > mainclass.getWorld().getSizeX()-8.5f || loc.z < 6.5f){
-			float nx = loc.x <= mainclass.getWorld().getSizeX()-8.5f ? loc.x : mainclass.getWorld().getSizeX()-8.5f;
+		}else if(loc.x > mainclass.getWorld().getSizeX()-(8.5f+ex) || loc.z < 6.5f){
+			float nx = loc.x <= mainclass.getWorld().getSizeX()-(8.5f+ex) ? loc.x : mainclass.getWorld().getSizeX()-(8.5f+ex);
 			float nz = loc.z >= 6.5f ? loc.z : 6.5f;
 			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
-		}else if(loc.x < 8.5f || loc.z > mainclass.getWorld().getSizeZ()-6.5f){
-			float nx = loc.x >= 8.5f ? loc.x : 8.5f;
+		}else if(loc.x < (8.5f+ex) || loc.z > mainclass.getWorld().getSizeZ()-6.5f){
+			float nx = loc.x >= (8.5f+ex) ? loc.x : (8.5f+ex);
 			float nz = loc.z <= mainclass.getWorld().getSizeZ()-6.5f ? loc.z : mainclass.getWorld().getSizeZ()-6.5f;
 			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
-		}else if(loc.x > mainclass.getWorld().getSizeX()-8.5f || loc.z > mainclass.getWorld().getSizeZ()-6.5f){
-			float nx = loc.x <= mainclass.getWorld().getSizeX()-8.5f ? loc.x : mainclass.getWorld().getSizeX()-8.5f;
+		}else if(loc.x > mainclass.getWorld().getSizeX()-(8.5f+ex)|| loc.z > mainclass.getWorld().getSizeZ()-6.5f){
+			float nx = loc.x <= mainclass.getWorld().getSizeX()-(8.5f+ex) ? loc.x : mainclass.getWorld().getSizeX()-(8.5f+ex);
 			float nz = loc.z <= mainclass.getWorld().getSizeZ()-6.5f ? loc.z : mainclass.getWorld().getSizeZ()-6.5f;
 			GL11.glTranslatef(nx * -1 * m, nz * -1 * m, 0);			
 		}else
 		GL11.glTranslatef(loc.getX() * -1 * m, loc.getZ() * -1 * m, 0);
+	
 	}
 
 	float camdis = -15f;
@@ -104,6 +80,7 @@ public class Render2D {
 	public void render() {
 	 mainclass.getSoundPlayer().playSound("bg_long", false);	
 		while (mainclass.isRunning()) {
+			if(mainclass.hasMapLoaded()){
 			if (!mainclass.isTimeRunning()) {
 				try {
 					Thread.sleep(1000 / 100);
@@ -203,7 +180,8 @@ public class Render2D {
 			}
 			
 			 GL11.glLoadIdentity();
-			 GL11.glTranslatef(-0.0f, 0.0f, -25f);
+			 GL11.glTranslatef(-0.0f, 0.0f, -camdis);
+			 GL11.glTranslatef(-0.0f, 0.0f, -25f + camdis);
 			 GL11.glDisable(GL11.GL_LIGHTING);
 			 {
 			 for(TextPopup tp:mainclass.getTextPopupArray()){
@@ -211,7 +189,29 @@ public class Render2D {
 			 tp.render(mainclass);
 			 }
 			 }
+			 GL11.glPushMatrix();
 
+			 if(mainclass.getFullscreen())
+				 GL11.glTranslatef(-4f, 0f, 0f);
+			 GL11.glTranslatef(-13.5f, 7.5f, 0f);
+			 GL11.glScalef(2f, 2f, 0f);
+			 GL11.glTranslatef(0f, -1f, 0f);
+			 Inventory.renderByIndex(mainclass,(int)mainclass.getSavedData().getData("skill"));
+			 GL11.glTranslatef(0f, 1f, 0f);
+			 int health = mainclass.getWorld().getPlayer().getHealth();
+			 for(int i=0;i<health;i++){
+				 renderImage(mainclass,"item_16");
+			GL11.glTranslatef(0.75f, 0f, 0f);
+			 }
+			GL11.glPopMatrix();
+			
+			if(mainclass.getGui() != null){
+				for(int in=0;in<mainclass.getGui().size();in++){
+					if(mainclass.getGui().getGuiPart(in)==null)continue;
+					mainclass.getGui().getGuiPart(in).render(mainclass);
+				}
+			}
+			
 			
 			  double curtime = System.currentTimeMillis(); int oneanimationrot
 			  = 1000; if(curtime-lastTime >= oneanimationrot)lastTime=curtime;
@@ -231,47 +231,32 @@ public class Render2D {
 			Display.update();
 			Display.sync(60);
 
-			/*
-			 * for(int i=0;i<Controls.entityLocations.length-1;i++){ Location
-			 * loc = Controls.entityLocations[i]; Location loc2 =
-			 * Controls.entityLocations[i+1]; if(loc==null||loc2==null)continue;
-			 * drawLine(loc,loc2); }
-			 */
+	
+		}else{
+			mainclass.addLoading();
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			GL11.glLoadIdentity();
 
-			// GL11.glTranslatef(-0.0f, 0.0f, camdis);
-			// looking = mainclass.getWorld().getPlayer().getLocation().clone();
-			// lookPos(looking,true);
-
-			// GL11.glPopMatrix();
-			// GL11.glLoadIdentity();
-			// GL11.glTranslatef(-0.0f, 0.0f, -25f);
-			// GL11.glDisable(GL11.GL_LIGHTING);
-			// {
-			// for(TextPopup tp:mainclass.getTextPopupArray()){
-			// if(tp==null)continue;
-			// tp.render(mainclass);
-			// }
-			// }
-
-			// SHADER TEST
-
-			/*
-			 * double curtime = System.currentTimeMillis(); int oneanimationrot
-			 * = 1000; if(curtime-lastTime >= oneanimationrot)lastTime=curtime;
-			 * // animation(1,(int)((curtime-lastTime)/oneanimationrot*16),5f);
-			 * 
-			 * if(mainclass.getDialogFrom()!=null&&mainclass.getDialog()!=null){
-			 * int length =
-			 * displayDialog(mainclass.getDialogFrom(),mainclass.getDialog
-			 * (),mainclass.getDialogCur()); mainclass.setTimeRunning(false);
-			 * if(mainclass.getDialogCur()>length-1) { mainclass.setDialog(null,
-			 * null); mainclass.setTimeRunning(true); }
-			 * 
-			 * 
-			 * 
-			 * }
-			 */
-
+			//SETUP CAM
+			GL11.glTranslatef(-0.0f, 0.0f, -42);
+//			GL11.glTranslatef(-5f, -5f, 0f);
+			String text1 = "Did you know";
+			String text2 = mainclass.getTextLoader().getText();
+			String text3 = ". . .";
+			int time = mainclass.getMapLoading();
+			int t = time/10;
+			for(int i=0;i<t%3;i++)
+				text3 = text3+" .";
+			GL11.glTranslatef(-text1.length()/2f, 0f, 0f);
+			renderString(mainclass,text1);
+			GL11.glTranslatef(-text2.length()/2f + text1.length()/2f, -1f, 0f);
+			renderString(mainclass,text2);
+			GL11.glTranslatef(-text3.length()/2f + text2.length()/2f, -1f, 0f);
+			renderString(mainclass,text3);
+			
+			Display.update();
+			Display.sync(60);
+		}
 		}
 		for (int index = 0; index < Render2D.chunkList.length; index++)
 			GL11.glDeleteLists(Render2D.chunkList[index], 1);
@@ -394,12 +379,10 @@ public class Render2D {
 	public static int updateChunkDisplayList(MainClass m, Chunk c, int list) {
 		glNewList(list, GL_COMPILE);
 		{
-			int index = -1;
 			int blockID = 0;
 			Location blockLocation;
 			for (int bx = 0; bx < c.getSizeX(); bx++)
 				for (int bz = 0; bz < c.getSizeZ(); bz++) {
-					index++;
 					blockID = c.getBlockID(bx, bz);
 					blockLocation = new Location(c.getChunkX() * c.getSizeX()
 							+ bx, c.getChunkZ() * c.getSizeZ() + bz);
@@ -415,35 +398,13 @@ public class Render2D {
 		return list;
 	}
 
-	private void drawLine(Location l, Location l2) {
-		GL11.glBindTexture(GL_TEXTURE_2D, 0);
-		GL11.glColor3f(1f, 0f, 0f);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex2f(l.x, l.z);
-		GL11.glVertex2f(l2.x, l2.z);
-		GL11.glEnd();
-		GL11.glColor3f(1f, 1f, 1f);
-	}
-
-	private void drawLine(Location l, Location l2, boolean b) {
-		GL11.glBindTexture(GL_TEXTURE_2D, 0);
-		if (b == false)
-			GL11.glColor3f(0f, 0f, 1f);
-		else
-			GL11.glColor3f(0f, 1f, 0f);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex2f(l.x, l.z);
-		GL11.glVertex2f(l2.x, l2.z);
-		GL11.glEnd();
-		GL11.glColor3f(1f, 1f, 1f);
-	}
 
 	public void renderChunk(MainClass m, Chunk c, int chunkX, int chunkZ, int i) {
 
 	}
 
-	public void renderImage(String img) {
-		glBindTexture(GL_TEXTURE_2D, mainclass.getPictureLoader()
+	public static void renderImage(MainClass m,String img) {
+		glBindTexture(GL_TEXTURE_2D, m.getPictureLoader()
 				.getImageAsInteger(img));
 		glBegin(GL_QUADS);
 		GL11.glTexCoord2f(0f, 1f);
@@ -456,19 +417,31 @@ public class Render2D {
 		GL11.glVertex2f(0f, 0f);
 		GL11.glEnd();
 	}
+	
+	public static void renderText(PictureLoader p, String s, Location loc,float xsize) {
+		GL11.glTranslatef(loc.x, loc.z, 0f);
+		GL11.glScalef(xsize, 1f, 1f);
+		for (int xo = 0; xo < s.toUpperCase().length(); xo++) {
+			GL11.glTranslatef(xo, 0, 0);
+			renderChar(p, 0, 0, s.toUpperCase().toCharArray()[xo]);
+			GL11.glTranslatef(-xo, 0, 0);
+		}
+		GL11.glScalef(1f/xsize, 1f, 1f);
+		GL11.glTranslatef(-loc.x, -loc.z, 0f);
+	}
 
 	public static void renderString(MainClass m, String s) {
 		for (int xo = 0; xo < s.toUpperCase().length(); xo++) {
 			GL11.glTranslatef(xo, 0, 0);
-			renderChar(m, 0, 0, s.toUpperCase().toCharArray()[xo]);
+			renderChar(m.getPictureLoader(), 0, 0, s.toUpperCase().toCharArray()[xo]);
 			GL11.glTranslatef(-xo, 0, 0);
 		}
-	}//commentd
+	}
 
-	public static void renderChar(MainClass m, float x, float y, char c) {
+	public static void renderChar(PictureLoader loader, float x, float y, char c) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,
-				m.getPictureLoader().getImageAsInteger("char_" + c));
+				loader.getImageAsInteger("char_" + c));
 		glBegin(GL_QUADS);
 		GL11.glTexCoord2f(0f, 1f);
 		GL11.glVertex2f(x + 0f, y + 1f);
@@ -481,6 +454,8 @@ public class Render2D {
 		GL11.glEnd();
 
 	}
+	
+	
 	
 	public float measureString(String str)
 	{
@@ -522,7 +497,7 @@ public class Render2D {
 			public void run() {
 				initDisplay(false);
 				initGL();
-				mainclass.getSoundPlayer().initSoundPlayer();
+				mainclass.getSoundPlayer().initSoundPlayer(mainclass.getSoundPower());
 				mainclass.getPictureLoader().loadTexture();
 				render();
 			}
@@ -535,7 +510,12 @@ public class Render2D {
 
 		try {
 			DisplayMode[] modes = Display.getAvailableDisplayModes();
-
+			DisplayMode m = Display.getDisplayMode();
+			
+			if(mainclass.getFullscreen()){
+				mainclass.setWidth(m.getWidth());
+				mainclass.setHeight(m.getHeight());
+			}
 			for (int i = 0; i < modes.length; i++) {
 				if ((modes[i].getWidth() == mainclass.getWidth())
 						&& (modes[i].getHeight() == mainclass.getHeight())) {
@@ -543,6 +523,7 @@ public class Render2D {
 					break;
 				}
 			}
+
 		} catch (LWJGLException e) {
 			Sys.alert("Error", "Unable to determine display modes.");
 			System.exit(0);
@@ -555,9 +536,9 @@ public class Render2D {
 
 		try {
 			Display.setDisplayMode(chosenMode);
-//			 Display.setVSyncEnabled(true);
-			Display.setFullscreen(fullscreen); // FULLSCREEn
-			Display.setTitle("LudumDare "+StartClass.version);
+			 Display.setVSyncEnabled(mainclass.getVSync());
+			Display.setFullscreen(mainclass.getFullscreen()); // FULLSCREEn
+			Display.setTitle("8bitLooter");
 
 			Display.setIcon(getIcons(System.getProperty("user.dir")
 					+ "\\img\\icon32.png"));
@@ -626,63 +607,108 @@ public class Render2D {
 	}
 
 	
+	static IntBuffer viewport = BufferUtils.createIntBuffer(16);
+	   static FloatBuffer modelview = BufferUtils.createFloatBuffer(16);
+	   static FloatBuffer projection = BufferUtils.createFloatBuffer(16);
+	   static FloatBuffer winZ = BufferUtils.createFloatBuffer(20);
+	   static FloatBuffer position = BufferUtils.createFloatBuffer(3);
+	   
+	 /*  static public Location getMousePosToCoords(int mx,int my){
+		   Location v=null;
+		   x=p+ru
+		   x=p+uv+tw
+		   
+		   return v;
+	   }*/
+	   static public Location getMousePositionIn3dCoords(int mouseX, int mouseY)
+	   {
 
-	public static void DrawText(Location textLoc, String text){
-		GL11.glTranslatef(textLoc.x, textLoc.z, 0f);
-		renderString(MainClass.classForRender,text);
-		GL11.glTranslatef(textLoc.x*-1f, textLoc.z*-1f, 0f);
-	}
-	public static  void DrawTexture(float x,float y,float w,float h){
-		//Update
-		glBegin(GL_QUADS);
-		GL11.glTexCoord2f(0f, 1f);
-		GL11.glVertex2f(x,y);
-		GL11.glTexCoord2f(1f, 1f);
-		GL11.glVertex2f(x+w,y);
-		GL11.glTexCoord2f(1f, 0f);
-		GL11.glVertex2f(x+w,y+h);
-		GL11.glTexCoord2f(0f, 0f);
-		GL11.glVertex2f(x,y+h);
-		GL11.glEnd();
-	}
-	public static  void DrawBox(float x,float y,float w,float h){
-		DrawLine(new Location(x,y),new Location(x+w,y));
-		DrawLine(new Location(x+w,y),new Location(x+w,y+h));
-		DrawLine(new Location(x+w,y+h),new Location(x,y+h));
-		DrawLine(new Location(x,y+h),new Location(x,y));
-	}
-	public static  void FillBox(float x,float y,float w,float h){
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(x,y);
-		GL11.glVertex2f(x+w,y);
-		GL11.glVertex2f(x+w,y+h);
-		GL11.glVertex2f(x,y+h);
-		GL11.glEnd();
-	}
-	public static void setTexture(String s){	
-		if(s == null)glBindTexture(GL_TEXTURE_2D,0);
-		else
-			glBindTexture(GL_TEXTURE_2D, MainClass.classForRender.getPictureLoader()
-					.getImageAsInteger(s));}
-	public static void setColor(float r,float g, float b){
-		GL11.glColor3f(r/255f,g/255f,b/255f);
-	}
-	public static  void DrawLine(Location loc1, Location loc2){
-			GL11.glBegin(GL11.GL_LINES);
-			GL11.glVertex2f(loc1.x, loc1.z);
-			GL11.glVertex2f(loc2.x, loc2.z);
+	      viewport.clear();
+	      modelview.clear();
+	      projection.clear();
+	      winZ.clear();;
+	      position.clear();
+	      float winX, winY;
+
+
+	      GL11.glGetFloat( GL11.GL_MODELVIEW_MATRIX, modelview );
+	      GL11.glGetFloat( GL11.GL_PROJECTION_MATRIX, projection );
+	      GL11.glGetInteger( GL11.GL_VIEWPORT, viewport );
+
+	      winX = (float)mouseX;
+	      winY = (float)mouseY;
+
+	      GL11.glReadPixels(mouseX, (int)winY, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, winZ);
+
+	      float zz = winZ.get();
+
+	      GLU.gluUnProject(winX, winY, zz, modelview, projection, viewport, position);
+
+
+
+	      Location v = new Location (position.get(0),position.get(1));
+
+
+	      return v ;
+	   }
+	
+
+
+		public static void DrawText(Location textLoc, String text){
+			GL11.glTranslatef(textLoc.x, textLoc.z, 0f);
+			renderString(MainClass.classForRender,text);
+			GL11.glTranslatef(textLoc.x*-1f, textLoc.z*-1f, 0f);
+		}
+		public static  void DrawTexture(float x,float y,float w,float h){
+			//Update
+			glBegin(GL_QUADS);
+			GL11.glTexCoord2f(0f, 1f);
+			GL11.glVertex2f(x,y);
+			GL11.glTexCoord2f(1f, 1f);
+			GL11.glVertex2f(x+w,y);
+			GL11.glTexCoord2f(1f, 0f);
+			GL11.glVertex2f(x+w,y+h);
+			GL11.glTexCoord2f(0f, 0f);
+			GL11.glVertex2f(x,y+h);
 			GL11.glEnd();
-	}
-	
-	public static void BeginClip(float x, float y, float w, float h)
-	{
-		GL11.glEnable( GL11.GL_SCISSOR_TEST );
-		GL11.glScissor((int)x,(int)y,(int)x+(int)w,(int)y+(int)h);
-	}
-	
-	public static void EndClip()
-	{
-		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-	}
-	
+		}
+		public static  void DrawBox(float x,float y,float w,float h){
+			DrawLine(new Location(x,y),new Location(x+w,y));
+			DrawLine(new Location(x+w,y),new Location(x+w,y+h));
+			DrawLine(new Location(x+w,y+h),new Location(x,y+h));
+			DrawLine(new Location(x,y+h),new Location(x,y));
+		}
+		public static  void FillBox(float x,float y,float w,float h){
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2f(x,y);
+			GL11.glVertex2f(x+w,y);
+			GL11.glVertex2f(x+w,y+h);
+			GL11.glVertex2f(x,y+h);
+			GL11.glEnd();
+		}
+		public static void setTexture(String s){	
+			if(s == null)glBindTexture(GL_TEXTURE_2D,0);
+			else
+				glBindTexture(GL_TEXTURE_2D, MainClass.classForRender.getPictureLoader()
+						.getImageAsInteger(s));}
+		public static void setColor(float r,float g, float b){
+			GL11.glColor3f(r/255f,g/255f,b/255f);
+		}
+		public static  void DrawLine(Location loc1, Location loc2){
+				GL11.glBegin(GL11.GL_LINES);
+				GL11.glVertex2f(loc1.x, loc1.z);
+				GL11.glVertex2f(loc2.x, loc2.z);
+				GL11.glEnd();
+		}
+		
+		public static void BeginClip(float x, float y, float w, float h)
+		{
+			GL11.glEnable( GL11.GL_SCISSOR_TEST );
+			GL11.glScissor((int)x,(int)y,(int)x+(int)w,(int)y+(int)h);
+		}
+		
+		public static void EndClip()
+		{
+			GL11.glDisable(GL11.GL_SCISSOR_TEST);
+		}
 }

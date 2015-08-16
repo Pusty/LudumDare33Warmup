@@ -1,6 +1,5 @@
 package me.engine.block;
 
-import java.util.HashMap;
 
 public class BlockHandler {
 	HandledBlock[] blockList;
