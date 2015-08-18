@@ -11,6 +11,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import spy.gui.features.Button;
+import spy.gui.features.Form;
+import spy.gui.features.SkillInventory;
 import me.engine.location.Location;
 import me.engine.main.Controls;
 import me.engine.main.GameTickHandler;
@@ -19,9 +22,6 @@ import me.engine.main.MainClass;
 import me.engine.multiplayer.DataClient;
 import me.engine.block.HandledBlock;
 import me.engine.entity.Player;
-import me.engine.gui.Button;
-import me.engine.gui.GuiScreen;
-import me.engine.gui.SkillInventory;
 import me.engine.world.LevelScript;
 import me.engine.world.World;
 import me.engine.render.AnimationHandler;
@@ -396,7 +396,7 @@ public class StartClass extends MainClass {
 
 	}
 	public static void openInventory(MainClass m){
-		if(m.getGui() != null)return;
+	/*	if(m.getGui() != null)return;
 		 GuiScreen gui = new GuiScreen(3);	
 		gui.setGuiPart(0, new Button(new Location(6,-10),6,2,0,18,60,100,"Exit"){
 			@Override
@@ -407,6 +407,23 @@ public class StartClass extends MainClass {
 		gui.setGuiPart(1, new SkillInventory(new Location(-4.5f,1.75f)));
 		
 		gui.setGuiPart(2, new Button(new Location(-12,-10),6,2,0,18,0,40,"Use"){
+			@Override
+			public void buttonClick(MainClass m,float mx,float mz){
+				Inventory.useItem(m, ((SkillInventory)(m.getGui().getGuiPart(1))).getItemIndex());
+			}
+		});
+		m.setGui(gui);*/
+		if(m.getGui() != null)return;
+		Form gui = new Form(new Location(0,0),new Location(0,0),"",3);	
+		gui.setGuiPart(0,new Button(new Location(6,-10),new Location(6,2),"Exit",0,18,60,100){
+			@Override
+			public void buttonClick(MainClass m,float mx,float mz){
+				Controls.close(m);
+			}
+		});
+		gui.setGuiPart(1, new SkillInventory(new Location(-4.5f,1.75f)));
+		
+		gui.setGuiPart(2, new Button(new Location(-12,-10),new Location(6,2),"Use",0,18,0,40){
 			@Override
 			public void buttonClick(MainClass m,float mx,float mz){
 				Inventory.useItem(m, ((SkillInventory)(m.getGui().getGuiPart(1))).getItemIndex());

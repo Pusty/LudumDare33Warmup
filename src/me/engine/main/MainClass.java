@@ -1,7 +1,7 @@
 package me.engine.main;
 
+import spy.gui.features.Form;
 import me.engine.block.BlockHandler;
-import me.engine.gui.GuiScreen;
 import me.engine.multiplayer.DataClient;
 import me.engine.render.PictureLoader;
 import me.engine.sound.SoundPlayer;
@@ -34,7 +34,7 @@ public abstract class MainClass {
 	float soundpower;
 	boolean load;
 	DataClient dataclient;
-	GuiScreen gui;
+	Form gui;
 	TextLoader textloader;
 	public MainClass(){
 		running=true;
@@ -52,8 +52,8 @@ public abstract class MainClass {
 	}
 	
 	public TextLoader getTextLoader(){return textloader;}
-	public GuiScreen getGui(){return gui;}
-	public void setGui(GuiScreen g){gui=g;}
+	public Form getGui(){return gui;}
+	public void setGui(Form g){gui=g;}
 	public SavedData getSavedData(){
 		return savedData;
 	}

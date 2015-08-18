@@ -1,8 +1,17 @@
 package spy.gui.features;
 
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glEnd;
+
 import java.awt.Color;
 
+import org.lwjgl.opengl.GL11;
+
 import me.engine.location.Location;
+import me.engine.main.MainClass;
 import me.engine.render.Render2D;
 import spy.gui.*;
 import spy.gui.features.*;
@@ -10,30 +19,46 @@ import spy.gui.features.*;
 public class Button extends IPanel
 {
 
-	Button(Location loc, Location size, String text) 
+	public Button(Location loc, Location size, String text,float p1,float p2,float p3,float p4) 
 	{
-		super(loc, size, text);
+		super(loc, size, text,p1,p2,p3,p4);
 
 	}
 	
 	public void PaintBackground()
 	{
-		Render2D.setColor(m_backColor.getRed(), m_backColor.getGreen(), m_backColor.getBlue());
-		Render2D.FillBox(GetAbsoluteLocation().x, GetAbsoluteLocation().z, GetAbsoluteSize().x, GetAbsoluteSize().z);
+//		Render2D.setColor(m_backColor.getRed(), m_backColor.getGreen(), m_backColor.getBlue());
+//		Render2D.FillBox(GetAbsoluteLocation().x, GetAbsoluteLocation().z, GetAbsoluteSize().x, GetAbsoluteSize().z);
 
-		Render2D.setColor(m_foreColor.getRed(), m_foreColor.getGreen(), m_foreColor.getBlue());
-		Render2D.DrawBox(GetAbsoluteLocation().x, GetAbsoluteLocation().z, GetAbsoluteSize().x, GetAbsoluteSize().z);
+//		Render2D.setColor(m_foreColor.getRed(), m_foreColor.getGreen(), m_foreColor.getBlue());
+//		Render2D.DrawBox(GetAbsoluteLocation().x, GetAbsoluteLocation().z, GetAbsoluteSize().x, GetAbsoluteSize().z);
 	}
 
 	public void Paint()
 	{
-		Render2D.DrawText(new Location(GetAbsoluteLocation().x + 5.f, GetAbsoluteLocation().z + GetAbsoluteSize().z / 2), m_szText);
-		
-		if(m_next != null)
-		{
-			m_next.PaintBackground();
-			m_next.Paint();
-		}
+			GL11.glPushMatrix();
+			GL11.glTranslatef(m_location.x+0.5f, m_location.z+0.5f, 0f);
+			if(timer<0)
+				glBindTexture(GL_TEXTURE_2D,
+						MainClass.classForRender.getPictureLoader().getImageAsInteger("item_0"));
+			else
+				glBindTexture(GL_TEXTURE_2D,
+						MainClass.classForRender.getPictureLoader().getImageAsInteger("item_8"));
+			glBegin(GL_QUADS);
+			GL11.glTexCoord2f(0f, 1f);
+			GL11.glVertex2f(0f,m_size.z);
+			GL11.glTexCoord2f(1f, 1f);
+			GL11.glVertex2f(m_size.x,m_size.z);
+			GL11.glTexCoord2f(1f, 0f);
+			GL11.glVertex2f(m_size.x,0f);
+			GL11.glTexCoord2f(0f, 0f);
+			GL11.glVertex2f(0f,0f);	
+			glEnd(); 
+			
+			GL11.glTranslatef(m_size.x/2 - this.m_szText.length()/2f,0.5f,0f);
+			Render2D.renderString(MainClass.classForRender, m_szText);
+			GL11.glPopMatrix();
+	
 	}
 
 	public void LeftMouseDown(Mouse mouse)
@@ -73,11 +98,21 @@ public class Button extends IPanel
 			UpdateColors();
 		}
 	}
-
-	public void OnClick()
-	{
+	int timer=0;
+	public void OnClick(MainClass m,float mx,float mz) {
+		if(timer>=0){}
+		else{
+		buttonClick(m,mx,mz);
+		timer=20;
+		}
+	}
+	public void tick(){
+		if(timer>=0)timer--;
+	}
+	public void buttonClick(MainClass m,float mx,float mz){
 		
 	}
+	
 	
 	public void UpdateColors()
 	{

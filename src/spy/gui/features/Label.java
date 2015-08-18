@@ -12,7 +12,7 @@ public class Label extends IPanel
 
 	Label(Location loc, Location size, String text) 
 	{
-		super(loc, size, text);
+		super(loc, size, text,0,0,0,0);
 
 	}
 	

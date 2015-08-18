@@ -208,7 +208,7 @@ public class Render2D {
 			if(mainclass.getGui() != null){
 				for(int in=0;in<mainclass.getGui().size();in++){
 					if(mainclass.getGui().getGuiPart(in)==null)continue;
-					mainclass.getGui().getGuiPart(in).render(mainclass);
+					mainclass.getGui().getGuiPart(in).Paint();
 				}
 			}
 			

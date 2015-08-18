@@ -216,7 +216,7 @@ public class StartScreen {
 			Display.setDisplayMode(chosenMode);
 //			 Display.setVSyncEnabled(true);
 			Display.setFullscreen(false); // FULLSCREEn
-			Display.setTitle("8bitLooter");
+			Display.setTitle("LudumDare33Warmup");
 			Display.setIcon(Render2D.getIcons(System.getProperty("user.dir")
 					+ "\\img\\icon32.png"));
 

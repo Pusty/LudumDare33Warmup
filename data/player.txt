@@ -1,7 +1,7 @@
-posX/8.7250805
-inv/0&Fireball%1&Smash%2&Bloodball
-posZ/9.225256
-world/2
-skill/2
-health/5
-worldOld/2
+posX/19.999836
+inv/0&Fireball%1&Smash%2&Bloodball%3&Potion%3&Potion
+posZ/26.799732
+world/1
+skill/0
+health/3
+worldOld/1
